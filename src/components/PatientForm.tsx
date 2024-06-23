@@ -8,12 +8,14 @@ const PatientForm = () => {
     register,
     handleSubmit,
     formState: { errors },
+    reset,
   } = useForm<DraftPatient>();
 
   const addPatient = usePatientStore((state) => state.addPatient);
 
   const registerPatient = (data: DraftPatient) => {
     addPatient(data);
+    reset();
   };
 
   return (
