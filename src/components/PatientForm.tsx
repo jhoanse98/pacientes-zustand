@@ -2,25 +2,47 @@ import { useForm } from "react-hook-form";
 import Error from "./Error";
 import { DraftPatient } from "../types";
 import { usePatientStore } from "../store";
+import { useEffect } from "react";
 
 const PatientForm = () => {
   const {
     register,
     handleSubmit,
     formState: { errors },
+
     reset,
   } = useForm<DraftPatient>();
 
+  const patients = usePatientStore((state) => state.patients);
+  const activeId = usePatientStore((state) => state.activeId);
   const addPatient = usePatientStore((state) => state.addPatient);
+  const updatePatient = usePatientStore((state) => state.updatePatient);
 
   const registerPatient = (data: DraftPatient) => {
-    addPatient(data);
+    if (activeId) {
+      updatePatient(data);
+    } else {
+      addPatient(data);
+    }
     reset();
   };
 
+  useEffect(() => {
+    if (activeId) {
+      const activePatient = patients.filter(
+        (patient) => patient.id === activeId
+      )[0];
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
+      const { id, ...restPatient } = activePatient;
+      reset(restPatient);
+    }
+  }, [activeId, patients, reset]);
+
   return (
     <div className="md:w-1/2 lg:w-2/5 mx-5">
-      <h2 className="font-black text-3xl text-center">Seguimiento Pacientes</h2>
+      <h2 className="font-black text-3xl text-center">
+        Seguimiento Pacientes {activeId}
+      </h2>
 
       <p className="text-lg mt-5 text-center mb-10">
         Añade Pacientes y {""}
